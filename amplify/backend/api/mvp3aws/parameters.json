@@ -1,0 +1,12 @@
+{
+  "AppSyncApiName": "mvp3aws",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authmvp3aws44c46d3b",
+      "Outputs.UserPoolId"
+    ]
+  },
+  "AuthModeLastUpdated": "2026-03-26T08:09:12.039Z"
+}

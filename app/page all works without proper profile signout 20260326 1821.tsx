@@ -31,7 +31,7 @@ const months = [
 
 type Tab = "electricity" | "water" | "fuel";
 
-function Home({ user, signOut }: any) {
+function Home() {
 
   const [activeTab, setActiveTab] = useState<Tab>("electricity");
 
@@ -52,14 +52,7 @@ function Home({ user, signOut }: any) {
   const [electricityRecords, setElectricityRecords] = useState<any[]>([]);
   const [waterRecords, setWaterRecords] = useState<any[]>([]);
 
-  const [showDropdown, setShowDropdown] = useState(false);
-
-  const years = Array.from({ length: 16 }, (_, i) => 2015 + i);
-
-  const userEmail =
-    user?.signInDetails?.loginId ||
-    user?.attributes?.email ||
-    "User";
+  const years = Array.from({ length: 15 }, (_, i) => 2015 + i);
 
   // ========================
   // LOAD DATA
@@ -223,36 +216,12 @@ function Home({ user, signOut }: any) {
     <main className="min-h-screen bg-[#f5f7f6]">
 
       {/* Navbar */}
-      <div className="border-b bg-white px-6 py-3 flex justify-between items-center">
+      <div className="border-b bg-white px-6 py-3 flex justify-between">
         <a href="https://esgee.earth" className="text-[#1f7a63] font-medium">
           ESGee Earth
         </a>
-
-        <div className="flex items-center gap-3">
-          <div className="text-sm text-[#1f7a63] border px-3 py-1 rounded-full">
-            App (beta)
-          </div>
-
-          <div className="relative">
-            <button
-              onClick={() => setShowDropdown(!showDropdown)}
-              className="text-sm text-[#1f7a63] border px-3 py-1 rounded-full flex items-center gap-2"
-            >
-              {userEmail}
-              <span>▾</span>
-            </button>
-
-            {showDropdown && (
-              <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow">
-                <button
-                  onClick={signOut}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
-                >
-                  Sign out
-                </button>
-              </div>
-            )}
-          </div>
+        <div className="text-sm text-[#1f7a63] border px-3 py-1 rounded-full">
+          App (beta)
         </div>
       </div>
 
@@ -267,7 +236,9 @@ function Home({ user, signOut }: any) {
 
             <div className="bg-white rounded-xl border overflow-hidden">
 
+              {/* Tabs */}
               <div className="flex border-b bg-gray-50">
+
                 {["electricity","water","fuel"].map((tab) => {
                   const label =
                     tab === "fuel"
@@ -288,10 +259,12 @@ function Home({ user, signOut }: any) {
                     </button>
                   );
                 })}
+
               </div>
 
               <div className="p-6 space-y-5">
 
+                {/* Provider */}
                 {activeTab === "electricity" ? (
                   <select
                     className="w-full p-3 border rounded-lg text-sm"
@@ -315,6 +288,7 @@ function Home({ user, signOut }: any) {
                   )
                 )}
 
+                {/* Year / Month */}
                 <div className="grid grid-cols-2 gap-3">
                   <button onClick={() => setShowYearPicker(!showYearPicker)} className="p-3 border rounded-lg text-sm">
                     {year || "Select year"}
@@ -345,6 +319,7 @@ function Home({ user, signOut }: any) {
                   </div>
                 )}
 
+                {/* Inputs */}
                 {activeTab === "electricity" ? (
                   <>
                     <input type="number" placeholder="Electricity (kWh)" className="w-full p-3 border rounded-lg text-sm"
@@ -383,130 +358,98 @@ function Home({ user, signOut }: any) {
               View data
             </h2>
 
-            <div className="bg-white rounded-xl border p-6">
 
-              {activeTab === "electricity" && (
-                <>
-                  {electricityRecords.length === 0 ? (
-                    <div className="text-center text-gray-400 py-6">
-                      No electricity records yet
-                    </div>
-                  ) : (
-                    <table className="w-full text-sm text-center">
-                      <thead className="text-gray-400 border-b">
-                        <tr>
-                          <th className="py-2">Year</th>
-                          <th>Month</th>
-                          <th>Usage (kWh)</th>
-                          <th>Emissions (tCO₂e)</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {electricityRecords.map((r) => (
-                          <tr key={r.id} className="border-b hover:bg-gray-50">
-                            <td className="py-2">{r.year}</td>
-                            <td>{r.month}</td>
-                            <td>{r.kwh}</td>
-                            <td>{Number(r.emissionsT).toFixed(4)}</td>
-                            <td>
-                              <button
-                                onClick={() => handleDelete(r.id)}
-                                className="text-red-500"
-                              >
-                                Delete
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
-                </>
+          <div className="bg-white rounded-xl border p-6">
+
+          {activeTab === "electricity" && (
+            <>
+              {electricityRecords.length === 0 ? (
+                <div className="text-center text-gray-400 py-6">
+                  No electricity records yet
+                </div>
+              ) : (
+                <table className="w-full text-sm text-center">
+                  <thead className="text-gray-400 border-b">
+                    <tr>
+                      <th className="py-2">Year</th>
+                      <th>Month</th>
+                      <th>Usage (kWh)</th>
+                      <th>Emissions (tCO₂e)</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {electricityRecords.map((r) => (
+                      <tr key={r.id} className="border-b hover:bg-gray-50">
+                        <td className="py-2">{r.year}</td>
+                        <td>{r.month}</td>
+                        <td>{r.kwh}</td>
+                        <td>{Number(r.emissionsT).toFixed(4)}</td>
+                        <td>
+                          <button
+                            onClick={() => handleDelete(r.id)}
+                            className="text-red-500"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               )}
+            </>
+          )}
 
-              {activeTab === "water" && (
-                <>
-                  {waterRecords.length === 0 ? (
-                    <div className="text-center text-gray-400 py-6">
-                      No water records yet
-                    </div>
-                  ) : (
-                    <table className="w-full text-sm text-center">
-                      <thead className="text-gray-400 border-b">
-                        <tr>
-                          <th className="py-2">Year</th>
-                          <th>Month</th>
-                          <th>Water (m³)</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {waterRecords.map((r) => (
-                          <tr key={r.id} className="border-b hover:bg-gray-50">
-                            <td className="py-2">{r.year}</td>
-                            <td>{r.month}</td>
-                            <td>{r.volume}</td>
-                            <td>
-                              <button
-                                onClick={() => handleDelete(r.id)}
-                                className="text-red-500"
-                              >
-                                Delete
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
-                </>
+          {activeTab === "water" && (
+            <>
+              {waterRecords.length === 0 ? (
+                <div className="text-center text-gray-400 py-6">
+                  No water records yet
+                </div>
+              ) : (
+                <table className="w-full text-sm text-center">
+                  <thead className="text-gray-400 border-b">
+                    <tr>
+                      <th className="py-2">Year</th>
+                      <th>Month</th>
+                      <th>Water (m³)</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {waterRecords.map((r) => (
+                      <tr key={r.id} className="border-b hover:bg-gray-50">
+                        <td className="py-2">{r.year}</td>
+                        <td>{r.month}</td>
+                        <td>{r.volume}</td>
+                        <td>
+                          <button
+                            onClick={() => handleDelete(r.id)}
+                            className="text-red-500"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               )}
+            </>
+          )}
 
-              {(electricityRecords.length > 0 || waterRecords.length > 0) && (
-                <button onClick={exportExcel} className="w-full mt-4 py-3 bg-[#1f7a63] text-white rounded-lg">
-                  Download Excel
-                </button>
-              )}
+            {(electricityRecords.length > 0 || waterRecords.length > 0) && (
+              <button onClick={exportExcel} className="w-full mt-4 py-3 bg-[#1f7a63] text-white rounded-lg">
+                Download Excel
+              </button>
+            )}
 
-            </div>
           </div>
 
         </div>
       </div>
-
-      {/* ✅ FOOTER (safely inserted here) */}
-      <div className="border-t mt-12 px-6 py-6 text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center gap-3">
-
-        <div className="text-center md:text-left">
-          © 2026 ESGee Earth · ESG for everyone, everywhere; with Earth in mind
-        </div>
-
-        <div className="flex items-center gap-4">
-          <a
-            href="/privacy"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[#1f7a63]"
-          >
-            Privacy Policy
-          </a>
-
-          <a href="mailto:hello@esgee.earth" className="hover:text-[#1f7a63]">
-            hello@esgee.earth
-          </a>
-
-          <a
-            href="https://www.linkedin.com/company/esgee"
-            target="_blank"
-            className="hover:text-[#1f7a63]"
-          >
-            ESGee
-          </a>
-        </div>
-
       </div>
-
     </main>
   );
 }
@@ -514,8 +457,11 @@ function Home({ user, signOut }: any) {
 export default function Page() {
   return (
     <Authenticator>
-      {({ signOut, user }) => (
-        <Home user={user} signOut={signOut} />
+      {({ signOut }) => (
+        <>
+          <button onClick={signOut}>Sign out</button>
+          <Home />
+        </>
       )}
     </Authenticator>
   );

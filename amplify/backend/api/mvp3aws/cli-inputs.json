@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "mvp3aws",
+    "serviceName": "AppSync",
+    "defaultAuthType": {
+      "mode": "AMAZON_COGNITO_USER_POOLS",
+      "cognitoUserPoolId": "authmvp3aws44c46d3b"
+    },
+    "additionalAuthTypes": [],
+    "conflictResolution": {}
+  }
+}

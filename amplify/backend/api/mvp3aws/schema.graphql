@@ -1,0 +1,22 @@
+type ElectricityRecord
+  @model
+  @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  year: Int!
+  month: String!
+  kwh: Float!
+  emissionsT: Float!
+  provider: String
+  createdAt: AWSDateTime
+}
+
+type WaterRecord
+  @model
+  @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  year: Int!
+  month: String!
+  volume: Float!
+  provider: String
+  createdAt: AWSDateTime
+}
