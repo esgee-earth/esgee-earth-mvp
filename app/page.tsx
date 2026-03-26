@@ -222,39 +222,46 @@ function Home({ user, signOut }: any) {
   return (
     <main className="min-h-screen bg-[#f5f7f6]">
 
-      {/* Navbar */}
-      <div className="border-b bg-white px-6 py-3 flex justify-between items-center">
-        <a href="https://esgee.earth" className="text-[#1f7a63] font-medium">
+    {/* Navbar */}
+    <div className="border-b bg-white px-6 py-3 flex justify-between items-center">
+
+      {/* LEFT: Brand + Product */}
+      <div className="flex items-center gap-3">
+        <a
+          href="https://esgee.earth"
+          className="text-[#1f7a63] font-medium hover:opacity-80 transition"
+        >
           ESGee Earth
         </a>
 
-        <div className="flex items-center gap-3">
-          <div className="text-sm text-[#1f7a63] border px-3 py-1 rounded-full">
-            App (beta)
-          </div>
-
-          <div className="relative">
-            <button
-              onClick={() => setShowDropdown(!showDropdown)}
-              className="text-sm text-[#1f7a63] border px-3 py-1 rounded-full flex items-center gap-2"
-            >
-              {userEmail}
-              <span>▾</span>
-            </button>
-
-            {showDropdown && (
-              <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow">
-                <button
-                  onClick={signOut}
-                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
-                >
-                  Sign out
-                </button>
-              </div>
-            )}
-          </div>
+        <div className="text-sm px-3 py-1.5 rounded-full bg-[#1f7a63] text-white shadow-sm hover:shadow-md transition">
+          ESG Tracker
         </div>
       </div>
+
+      {/* RIGHT: User */}
+      <div className="relative">
+        <button
+          onClick={() => setShowDropdown(!showDropdown)}
+          className="text-sm text-[#1f7a63] border border-[#1f7a63]/30 px-3 py-1.5 rounded-full flex items-center gap-2 hover:bg-[#1f7a63]/5 transition"
+        >
+          {userEmail}
+          <span className="text-xs">▾</span>
+        </button>
+
+        {showDropdown && (
+          <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-md overflow-hidden">
+            <button
+              onClick={signOut}
+              className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
+            >
+              Sign out
+            </button>
+          </div>
+        )}
+      </div>
+
+    </div>
 
       <div className="flex justify-center p-6">
         <div className="w-full max-w-2xl space-y-8">
