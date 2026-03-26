@@ -234,8 +234,8 @@ function Home({ user, signOut }: any) {
           ESGee Earth
         </a>
 
-        <div className="text-sm px-3 py-1.5 rounded-full bg-[#1f7a63] text-white shadow-sm hover:shadow-md transition">
-          ESG Tracker
+        <div className="px-4 py-1.5 rounded-full border border-[#1f7a63]/30 bg-[#1f7a63]/10 text-[#1f7a63] text-xs tracking-[0.2em] font-medium">
+          ENVIRONMENTAL TRACKER
         </div>
       </div>
 
@@ -357,8 +357,9 @@ function Home({ user, signOut }: any) {
                     <input type="number" placeholder="Electricity (kWh)" className="w-full p-3 border rounded-lg text-sm"
                       value={kwh} onChange={(e) => setKwh(e.target.value)} />
 
-                    <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500">
-                      <input type="file" onChange={handleFile} />
+                    <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500 cursor-not-allowed">
+                      Upload bill (coming soon)
+                      <input type="file" onChange={handleFile} className="hidden" disabled />
                     </div>
 
                     <button onClick={addElectricity} className="w-full py-3 bg-[#1f7a63] text-white rounded-lg">
@@ -369,6 +370,11 @@ function Home({ user, signOut }: any) {
                   <>
                     <input type="number" placeholder="Water (m³)" className="w-full p-3 border rounded-lg text-sm"
                       value={waterUsage} onChange={(e) => setWaterUsage(e.target.value)} />
+
+                      <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500 cursor-not-allowed">
+                        Upload bill (coming soon)
+                        <input type="file" onChange={handleFile} className="hidden" disabled />
+                      </div> 
 
                     <button onClick={addWater} className="w-full py-3 bg-[#1f7a63] text-white rounded-lg">
                       Add record
