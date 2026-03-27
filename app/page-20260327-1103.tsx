@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import "../lib/amplifyClient";
 
-import { Authenticator, ThemeProvider } from "@aws-amplify/ui-react";
+import { Authenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 
 import * as XLSX from "xlsx";
@@ -16,76 +16,6 @@ import {
   fetchWaterRecords,
   deleteWaterRecord,
 } from "../lib/api";
-
-const theme = {
-  name: "esgee-theme",
-  tokens: {
-    colors: {
-      brand: {
-        primary: {
-          10: "#edf7f3",
-          20: "#d6efe8",
-          40: "#9ed9c8",
-          60: "#5bbfa3",
-          80: "#1f7a63", // main green
-          100: "#145c4a", // darker green
-        },
-      },
-
-      font: {
-        primary: "#145c4a",
-        secondary: "#4b5563",
-      },
-
-      background: {
-        primary: "#ffffff",
-        secondary: "#f5f7f6",
-      },
-
-      border: {
-        primary: "#d1d5db",
-        secondary: "#e5e7eb",
-      },
-
-      focus: {
-        value: "#1f7a63", // 🔥 removes blue focus ring
-      },
-    },
-
-    components: {
-      button: {
-        primary: {
-          backgroundColor: "#1f7a63",
-          color: "#ffffff",
-          _hover: {
-            backgroundColor: "#145c4a",
-          },
-        },
-      },
-
-      tabs: {
-        item: {
-          _active: {
-            color: "#1f7a63",
-            borderColor: "#1f7a63",
-          },
-        },
-      },
-
-      fieldcontrol: {
-        _focus: {
-          borderColor: "#1f7a63",
-        },
-      },
-    },
-
-    radii: {
-      small: "10px",
-      medium: "14px",
-      large: "18px",
-    },
-  },
-};
 
 const emissionFactors: Record<string, number> = {
   TNB: 0.774,
@@ -261,27 +191,13 @@ function Home({ user, signOut }: any) {
       ? electricityRecords.map((r) => ({
           Year: r.year,
           Month: r.month,
-          "Electricity usage (kWh)": r.kwh,
+          "Electricity (kWh)": r.kwh,
           "Emissions (tCO2e)": r.emissionsT,
-          "Provider": r.provider,
-          "Emission Factor (tCO2e/MWh)": emissionFactors[r.provider] ?? "",
-          "Recorded At (Local)": r.createdAt
-            ? new Date(r.createdAt).toLocaleString()
-            : "",
-          "Recorded At (UTC)": r.createdAt
-            ? new Date(r.createdAt).toISOString()
-              : "",
         }))
       : waterRecords.map((r) => ({
           Year: r.year,
           Month: r.month,
           "Water (m³)": r.volume,
-          "Recorded At (Local)": r.createdAt
-            ? new Date(r.createdAt).toLocaleString()
-            : "",
-          "Recorded At (UTC)": r.createdAt
-            ? new Date(r.createdAt).toISOString()
-              : "",
         }));
 
     const metadataSheet = [
@@ -307,7 +223,7 @@ function Home({ user, signOut }: any) {
     <main className="min-h-screen bg-[#f5f7f6]">
 
     {/* Navbar */}
-    <div className="border-b bg-white/60 backdrop-blur-lg px-4 sm:px-6 py-3">
+    <div className="border-b bg-white px-4 sm:px-6 py-3">
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 
@@ -317,7 +233,7 @@ function Home({ user, signOut }: any) {
           {/* Brand */}
           <a
             href="https://esgee.earth"
-            className="text-[#145c4a] font-medium text-sm sm:text-xl whitespace-nowrap"
+            className="text-[#145c4a] font-medium text-sm sm:text-base whitespace-nowrap"
           >
             ESGee Earth
           </a>
@@ -325,13 +241,7 @@ function Home({ user, signOut }: any) {
           {/* Tracker + mobile email row */}
           <div className="flex justify-between items-center w-full sm:w-auto sm:gap-3">
 
-            <div className="text-[10px] sm:text-xs tracking-[0.2em] px-4 py-1.5 rounded-full
-              border border-[#145c4a]/20
-              bg-[#1f7a63]/10
-              backdrop-blur-md
-              text-[#145c4a]
-              whitespace-nowrap
-              shadow-sm">
+            <div className="text-[10px] sm:text-xs tracking-[0.2em] px-3 py-1.5 rounded-full border border-[#145c4a]/30 bg-[#145c4a]/10 text-[#145c4a] whitespace-nowrap">
               ENVIRONMENTAL TRACKER (DEMO)
             </div>
 
@@ -413,9 +323,7 @@ function Home({ user, signOut }: any) {
 
                 {activeTab === "electricity" ? (
                   <select
-                    className={`w-full p-3 border rounded-lg text-sm ${
-                      provider ? "text-black" : "text-gray-500"
-                    }`}
+                    className="w-full p-3 border rounded-lg text-sm"
                     value={provider}
                     onChange={(e) => setProvider(e.target.value)}
                   >
@@ -429,7 +337,7 @@ function Home({ user, signOut }: any) {
                     <input
                       type="text"
                       placeholder="Water provider (optional)"
-                      className="w-full p-3 border rounded-lg text-sm placeholder:text-gray-500"
+                      className="w-full p-3 border rounded-lg text-sm"
                       value={waterProvider}
                       onChange={(e) => setWaterProvider(e.target.value)}
                     />
@@ -474,7 +382,7 @@ function Home({ user, signOut }: any) {
                           ? `Electricity usage (kWh) · ${month} ${year}`
                           : "Electricity usage (kWh)"
                       }
-                      className="w-full p-3 border rounded-lg text-sm placeholder:text-gray-500"
+                      className="w-full p-3 border rounded-lg text-sm"
                       value={kwh} onChange={(e) => setKwh(e.target.value)} />
 
                     <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500 cursor-not-allowed">
@@ -494,7 +402,7 @@ function Home({ user, signOut }: any) {
                         ? `Water usage (m³) · ${month} ${year}`
                         : "Water usage (m³)"
                     }
-                    className="w-full p-3 border rounded-lg text-sm placeholder:text-gray-500"
+                    className="w-full p-3 border rounded-lg text-sm"
                       value={waterUsage} onChange={(e) => setWaterUsage(e.target.value)} />
 
                       <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500 cursor-not-allowed">
@@ -542,13 +450,7 @@ function Home({ user, signOut }: any) {
                         </tr>
                       </thead>
                       <tbody>
-                      {[...electricityRecords]
-                        .sort((a, b) => {
-                          const dateA = new Date(`${a.month} 1, ${a.year}`);
-                          const dateB = new Date(`${b.month} 1, ${b.year}`);
-                          return dateA.getTime() - dateB.getTime();
-                        })
-                        .map((r) => (
+                        {electricityRecords.map((r) => (
                           <tr key={r.id} className="border-b hover:bg-gray-50">
                             <td className="py-2">{r.year}</td>
                             <td>{r.month}</td>
@@ -587,13 +489,7 @@ function Home({ user, signOut }: any) {
                         </tr>
                       </thead>
                       <tbody>
-                      {[...waterRecords]
-                        .sort((a, b) => {
-                          const dateA = new Date(`${a.month} 1, ${a.year}`);
-                          const dateB = new Date(`${b.month} 1, ${b.year}`);
-                          return dateA.getTime() - dateB.getTime();
-                        })
-                        .map((r) => (
+                        {waterRecords.map((r) => (
                           <tr key={r.id} className="border-b hover:bg-gray-50">
                             <td className="py-2">{r.year}</td>
                             <td>{r.month}</td>
@@ -664,53 +560,10 @@ function Home({ user, signOut }: any) {
 
 export default function Page() {
   return (
-    <ThemeProvider theme={theme}>
-      <Authenticator
-        components={{
-          Header() {
-            return (
-              <div
-                    style={{
-                      textAlign: "center",
-                      marginBottom: 20,
-                      marginTop: 40, // 👈 ADD THIS
-                    }}
-                  >
-                <h2 style={{ color: "#145c4a", fontWeight: 600, fontSize: 22 }}>
-                  ESGee Earth
-                </h2>
-                <p style={{ fontSize: 14, color: "#6b7280" }}>
-                  Build your ESG records, one step at a time
-                </p>
-              </div>
-            );
-          },
-
-          SignIn: {
-            Header() {
-              return (
-                <h3 style={{ textAlign: "center", marginBottom: 10 }}>
-                  Welcome back
-                </h3>
-              );
-            },
-          },
-
-          SignUp: {
-            Header() {
-              return (
-                <h3 style={{ textAlign: "center", marginBottom: 10 }}>
-                  Create your account
-                </h3>
-              );
-            },
-          },
-        }}
-      >
-        {({ signOut, user }) => (
-          <Home user={user} signOut={signOut} />
-        )}
-      </Authenticator>
-    </ThemeProvider>
+    <Authenticator>
+      {({ signOut, user }) => (
+        <Home user={user} signOut={signOut} />
+      )}
+    </Authenticator>
   );
 }
