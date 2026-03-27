@@ -6,6 +6,8 @@ import "../lib/amplifyClient";
 import { Authenticator, ThemeProvider } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 
+import { uploadData } from "aws-amplify/storage";
+
 import * as XLSX from "xlsx";
 
 import {
@@ -117,7 +119,7 @@ function Home({ user, signOut }: any) {
   const [kwh, setKwh] = useState("");
   const [waterUsage, setWaterUsage] = useState("");
 
-  const [receipt, setReceipt] = useState<string | null>(null);
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
 
   const [electricityRecords, setElectricityRecords] = useState<any[]>([]);
   const [waterRecords, setWaterRecords] = useState<any[]>([]);
@@ -156,10 +158,7 @@ function Home({ user, signOut }: any) {
   const handleFile = (e: any) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = () => setReceipt(reader.result as string);
-    reader.readAsDataURL(file);
+    setReceiptFile(file);
   };
 
   // ========================
@@ -185,22 +184,43 @@ function Home({ user, signOut }: any) {
   // ADD ELECTRICITY
   // ========================
   const addElectricity = async () => {
+    console.log("addElectricity triggered");
+
     if (!kwh || !provider || !year || !month) return;
 
     const factor = emissionFactors[provider];
-    const emissionsKg = Number(kwh) * factor;
+    const emissionsT = (Number(kwh) / 1000) * factor;
 
     try {
+      let fileKey = "";
+      let uploadedAt = null;
+
+      // 🔥 Upload file if exists
+      if (receiptFile) {
+        const key = `receipts/${Date.now()}-${receiptFile.name}`;
+
+        await uploadData({
+          key,
+          data: receiptFile,
+        });
+
+        fileKey = key;
+        uploadedAt = new Date().toISOString();
+      }
+
       await addElectricityRecord({
         year,
         month,
         kwh: Number(kwh),
-        emissionsT: emissionsKg / 1000,
+        emissionsT,
         provider,
+        receiptKey: fileKey || null,
+        receiptUploadedAt: uploadedAt,
       });
 
+      // Reset
       setKwh("");
-      setReceipt(null);
+      setReceiptFile(null);
 
       await loadData();
 
@@ -216,14 +236,34 @@ function Home({ user, signOut }: any) {
     if (!waterUsage || !year || !month) return;
 
     try {
+      let fileKey = "";
+      let uploadedAt = null;
+
+      // 🔥 Upload file if exists
+      if (receiptFile) {
+        const key = `receipts/${Date.now()}-${receiptFile.name}`;
+
+        await uploadData({
+          key,
+          data: receiptFile,
+        });
+
+        fileKey = key;
+        uploadedAt = new Date().toISOString();
+      }
+
       await addWaterRecord({
         year,
         month,
         volume: Number(waterUsage),
         provider: waterProvider || "N/A",
+        receiptKey: fileKey || null,
+        receiptUploadedAt: uploadedAt,
       });
 
+      // Reset
       setWaterUsage("");
+      setReceiptFile(null);
 
       await loadData();
 
@@ -257,6 +297,10 @@ function Home({ user, signOut }: any) {
 
     const isElectricity = activeTab === "electricity";
 
+    const attachmentCount = isElectricity
+      ? electricityRecords.filter((r) => r.receiptKey).length
+      : waterRecords.filter((r) => r.receiptKey).length;
+
     const dataSheet = isElectricity
       ? electricityRecords.map((r) => ({
           Year: r.year,
@@ -265,6 +309,7 @@ function Home({ user, signOut }: any) {
           "Emissions (tCO2e)": r.emissionsT,
           "Provider": r.provider,
           "Emission Factor (tCO2e/MWh)": emissionFactors[r.provider] ?? "",
+          "Attachment Included": r.receiptKey ? "Yes" : "No",
           "Recorded At (Local)": r.createdAt
             ? new Date(r.createdAt).toLocaleString()
             : "",
@@ -276,6 +321,7 @@ function Home({ user, signOut }: any) {
           Year: r.year,
           Month: r.month,
           "Water (m³)": r.volume,
+          "Attachment Included": r.receiptKey ? "Yes" : "No",
           "Recorded At (Local)": r.createdAt
             ? new Date(r.createdAt).toLocaleString()
             : "",
@@ -293,6 +339,10 @@ function Home({ user, signOut }: any) {
         Value: isElectricity
           ? electricityRecords.length
           : waterRecords.length,
+      },
+      {
+        Key: "Attachments Included",
+        Value: attachmentCount,
       },
     ];
 
@@ -477,9 +527,13 @@ function Home({ user, signOut }: any) {
                       className="w-full p-3 border rounded-lg text-sm placeholder:text-gray-500"
                       value={kwh} onChange={(e) => setKwh(e.target.value)} />
 
-                    <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500 cursor-not-allowed">
-                      Upload bill (coming soon)
-                      <input type="file" onChange={handleFile} className="hidden" disabled />
+                    <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500">
+                    <input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      onChange={handleFile}
+                      className="w-full p-3 border rounded-lg text-sm"
+                    />
                     </div>
 
                     <button onClick={addElectricity} className="w-full py-3 bg-[#1f7a63] text-white rounded-lg">
@@ -497,9 +551,13 @@ function Home({ user, signOut }: any) {
                     className="w-full p-3 border rounded-lg text-sm placeholder:text-gray-500"
                       value={waterUsage} onChange={(e) => setWaterUsage(e.target.value)} />
 
-                      <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500 cursor-not-allowed">
-                        Upload bill (coming soon)
-                        <input type="file" onChange={handleFile} className="hidden" disabled />
+                      <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500">
+                      <input
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onChange={handleFile}
+                        className="w-full p-3 border rounded-lg text-sm"
+                      />
                       </div>
 
                     <button onClick={addWater} className="w-full py-3 bg-[#1f7a63] text-white rounded-lg">

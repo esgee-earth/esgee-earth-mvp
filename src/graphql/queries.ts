@@ -17,6 +17,8 @@ export const getElectricityRecord = /* GraphQL */ `query GetElectricityRecord($i
     emissionsT
     provider
     createdAt
+    receiptKey
+    receiptUploadedAt
     updatedAt
     owner
     __typename
@@ -44,6 +46,8 @@ export const listElectricityRecords = /* GraphQL */ `query ListElectricityRecord
       emissionsT
       provider
       createdAt
+      receiptKey
+      receiptUploadedAt
       updatedAt
       owner
       __typename
@@ -64,6 +68,8 @@ export const getWaterRecord = /* GraphQL */ `query GetWaterRecord($id: ID!) {
     volume
     provider
     createdAt
+    receiptKey
+    receiptUploadedAt
     updatedAt
     owner
     __typename
@@ -86,6 +92,8 @@ export const listWaterRecords = /* GraphQL */ `query ListWaterRecords(
       volume
       provider
       createdAt
+      receiptKey
+      receiptUploadedAt
       updatedAt
       owner
       __typename

@@ -20,6 +20,8 @@ export const createElectricityRecord = /* GraphQL */ `mutation CreateElectricity
     emissionsT
     provider
     createdAt
+    receiptKey
+    receiptUploadedAt
     updatedAt
     owner
     __typename
@@ -41,6 +43,8 @@ export const updateElectricityRecord = /* GraphQL */ `mutation UpdateElectricity
     emissionsT
     provider
     createdAt
+    receiptKey
+    receiptUploadedAt
     updatedAt
     owner
     __typename
@@ -62,6 +66,8 @@ export const deleteElectricityRecord = /* GraphQL */ `mutation DeleteElectricity
     emissionsT
     provider
     createdAt
+    receiptKey
+    receiptUploadedAt
     updatedAt
     owner
     __typename
@@ -82,6 +88,8 @@ export const createWaterRecord = /* GraphQL */ `mutation CreateWaterRecord(
     volume
     provider
     createdAt
+    receiptKey
+    receiptUploadedAt
     updatedAt
     owner
     __typename
@@ -102,6 +110,8 @@ export const updateWaterRecord = /* GraphQL */ `mutation UpdateWaterRecord(
     volume
     provider
     createdAt
+    receiptKey
+    receiptUploadedAt
     updatedAt
     owner
     __typename
@@ -122,6 +132,8 @@ export const deleteWaterRecord = /* GraphQL */ `mutation DeleteWaterRecord(
     volume
     provider
     createdAt
+    receiptKey
+    receiptUploadedAt
     updatedAt
     owner
     __typename

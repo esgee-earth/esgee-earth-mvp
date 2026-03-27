@@ -8,6 +8,8 @@ type ElectricityRecord
   emissionsT: Float!
   provider: String
   createdAt: AWSDateTime
+  receiptKey: String
+  receiptUploadedAt: AWSDateTime
 }
 
 type WaterRecord
@@ -19,4 +21,6 @@ type WaterRecord
   volume: Float!
   provider: String
   createdAt: AWSDateTime
+  receiptKey: String
+  receiptUploadedAt: AWSDateTime
 }

@@ -17,6 +17,9 @@
       },
       "api": {
         "mvp3aws": {}
+      },
+      "storage": {
+        "bills": {}
       }
     }
   }

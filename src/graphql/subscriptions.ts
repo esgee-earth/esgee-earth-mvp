@@ -20,6 +20,8 @@ export const onCreateElectricityRecord = /* GraphQL */ `subscription OnCreateEle
     emissionsT
     provider
     createdAt
+    receiptKey
+    receiptUploadedAt
     updatedAt
     owner
     __typename
@@ -41,6 +43,8 @@ export const onUpdateElectricityRecord = /* GraphQL */ `subscription OnUpdateEle
     emissionsT
     provider
     createdAt
+    receiptKey
+    receiptUploadedAt
     updatedAt
     owner
     __typename
@@ -62,6 +66,8 @@ export const onDeleteElectricityRecord = /* GraphQL */ `subscription OnDeleteEle
     emissionsT
     provider
     createdAt
+    receiptKey
+    receiptUploadedAt
     updatedAt
     owner
     __typename
@@ -82,6 +88,8 @@ export const onCreateWaterRecord = /* GraphQL */ `subscription OnCreateWaterReco
     volume
     provider
     createdAt
+    receiptKey
+    receiptUploadedAt
     updatedAt
     owner
     __typename
@@ -102,6 +110,8 @@ export const onUpdateWaterRecord = /* GraphQL */ `subscription OnUpdateWaterReco
     volume
     provider
     createdAt
+    receiptKey
+    receiptUploadedAt
     updatedAt
     owner
     __typename
@@ -122,6 +132,8 @@ export const onDeleteWaterRecord = /* GraphQL */ `subscription OnDeleteWaterReco
     volume
     provider
     createdAt
+    receiptKey
+    receiptUploadedAt
     updatedAt
     owner
     __typename

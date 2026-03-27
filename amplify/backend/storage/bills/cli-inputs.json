@@ -1,0 +1,14 @@
+{
+  "resourceName": "bills",
+  "policyUUID": "93757905",
+  "bucketName": "esgee-mvp3-receipts",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}
