@@ -223,44 +223,66 @@ function Home({ user, signOut }: any) {
     <main className="min-h-screen bg-[#f5f7f6]">
 
     {/* Navbar */}
-    <div className="border-b bg-white px-6 py-3 flex justify-between items-center">
+    <div className="border-b bg-white px-4 sm:px-6 py-3">
 
-      {/* LEFT: Brand + Product */}
-      <div className="flex items-center gap-3">
-        <a
-          href="https://esgee.earth"
-          className="text-[#1f7a63] font-medium hover:opacity-80 transition"
-        >
-          ESGee Earth
-        </a>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 
-        <div className="px-4 py-1.5 rounded-full border border-[#1f7a63]/30 bg-[#1f7a63]/10 text-[#1f7a63] text-xs tracking-[0.2em] font-medium">
-          ENVIRONMENTAL TRACKER
+        {/* LEFT SIDE */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+
+          {/* Brand */}
+          <a
+            href="https://esgee.earth"
+            className="text-[#145c4a] font-medium text-sm sm:text-base whitespace-nowrap"
+          >
+            ESGee Earth
+          </a>
+
+          {/* Tracker + mobile email row */}
+          <div className="flex justify-between items-center w-full sm:w-auto sm:gap-3">
+
+            <div className="text-[10px] sm:text-xs tracking-[0.2em] px-3 py-1.5 rounded-full border border-[#145c4a]/30 bg-[#145c4a]/10 text-[#145c4a] whitespace-nowrap">
+              ENVIRONMENTAL TRACKER (DEMO)
+            </div>
+
+            {/* Mobile email */}
+            <div className="relative sm:hidden max-w-[150px] min-w-0">
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="text-xs text-[#145c4a] border border-[#145c4a]/30 px-3 py-1.5 rounded-full flex items-center gap-2 truncate w-full"
+              >
+                <span className="truncate">{userEmail}</span>
+                <span className="text-xs">▾</span>
+              </button>
+            </div>
+
+          </div>
         </div>
-      </div>
 
-      {/* RIGHT: User */}
-      <div className="relative">
-        <button
-          onClick={() => setShowDropdown(!showDropdown)}
-          className="text-sm text-[#1f7a63] border border-[#1f7a63]/30 px-3 py-1.5 rounded-full flex items-center gap-2 hover:bg-[#1f7a63]/5 transition"
-        >
-          {userEmail}
-          <span className="text-xs">▾</span>
-        </button>
+        {/* Desktop email */}
+        <div className="relative hidden sm:block max-w-[220px] min-w-0">
+          <button
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="text-sm text-[#145c4a] border border-[#145c4a]/30 px-3 py-1.5 rounded-full flex items-center gap-2 truncate"
+          >
+            <span className="truncate">{userEmail}</span>
+            <span className="text-xs">▾</span>
+          </button>
+        </div>
 
+        {/* Dropdown */}
         {showDropdown && (
-          <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-md overflow-hidden">
+          <div className="absolute right-4 mt-2 w-44 bg-white border border-gray-200 rounded-xl shadow-md z-50">
             <button
               onClick={signOut}
-              className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
+              className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
             >
               Sign out
             </button>
           </div>
         )}
-      </div>
 
+      </div>
     </div>
 
       <div className="flex justify-center p-6">
@@ -374,7 +396,7 @@ function Home({ user, signOut }: any) {
                       <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500 cursor-not-allowed">
                         Upload bill (coming soon)
                         <input type="file" onChange={handleFile} className="hidden" disabled />
-                      </div> 
+                      </div>
 
                     <button onClick={addWater} className="w-full py-3 bg-[#1f7a63] text-white rounded-lg">
                       Add record
