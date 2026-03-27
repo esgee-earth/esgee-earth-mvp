@@ -31,6 +31,8 @@ export const addElectricityRecord = async (data: {
   kwh: number;
   emissionsT: number;
   provider: string;
+  receiptKey?: string | null;
+  receiptUploadedAt?: string | null;
 }) => {
   return await client.graphql({
     query: createElectricityRecord,
@@ -68,6 +70,8 @@ export const addWaterRecord = async (data: {
   month: string;
   volume: number;
   provider?: string;
+  receiptKey?: string | null;
+  receiptUploadedAt?: string | null;
 }) => {
   return await client.graphql({
     query: createWaterRecord,
