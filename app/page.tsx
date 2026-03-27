@@ -376,7 +376,13 @@ function Home({ user, signOut }: any) {
 
                 {activeTab === "electricity" ? (
                   <>
-                    <input type="number" placeholder="Electricity (kWh)" className="w-full p-3 border rounded-lg text-sm"
+                    <input type="number"
+                    placeholder={
+                        year && month
+                          ? `Electricity usage (kWh) · ${month} ${year}`
+                          : "Electricity usage (kWh)"
+                      }
+                      className="w-full p-3 border rounded-lg text-sm"
                       value={kwh} onChange={(e) => setKwh(e.target.value)} />
 
                     <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500 cursor-not-allowed">
@@ -390,7 +396,13 @@ function Home({ user, signOut }: any) {
                   </>
                 ) : activeTab === "water" ? (
                   <>
-                    <input type="number" placeholder="Water (m³)" className="w-full p-3 border rounded-lg text-sm"
+                    <input type="number"
+                    placeholder={
+                      year && month
+                        ? `Water usage (m³) · ${month} ${year}`
+                        : "Water usage (m³)"
+                    }
+                    className="w-full p-3 border rounded-lg text-sm"
                       value={waterUsage} onChange={(e) => setWaterUsage(e.target.value)} />
 
                       <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500 cursor-not-allowed">
