@@ -6,7 +6,7 @@ import "../lib/amplifyClient";
 import { Authenticator, ThemeProvider } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 
-import { uploadData, getUrl } from "aws-amplify/storage";
+import { uploadData } from "aws-amplify/storage";
 
 import * as XLSX from "xlsx";
 
@@ -119,8 +119,7 @@ function Home({ user, signOut }: any) {
   const [kwh, setKwh] = useState("");
   const [waterUsage, setWaterUsage] = useState("");
 
-  const [electricityFile, setElectricityFile] = useState<File | null>(null);
-  const [waterFile, setWaterFile] = useState<File | null>(null);
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
 
   const [electricityRecords, setElectricityRecords] = useState<any[]>([]);
   const [waterRecords, setWaterRecords] = useState<any[]>([]);
@@ -159,12 +158,7 @@ function Home({ user, signOut }: any) {
   const handleFile = (e: any) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    if (activeTab === "electricity") {
-      setElectricityFile(file);
-    } else if (activeTab === "water") {
-      setWaterFile(file);
-    }
+    setReceiptFile(file);
   };
 
   // ========================
@@ -187,22 +181,6 @@ function Home({ user, signOut }: any) {
   };
 
   // ========================
-  // VIEW FILE
-  // ========================
-  const handleViewFile = async (key: string) => {
-    try {
-      const res = await getUrl({
-        key,
-        options: { expiresIn: 60 }, // 1 min access
-      });
-
-      window.open(res.url.toString(), "_blank");
-    } catch (err) {
-      console.error("VIEW FILE ERROR:", err);
-    }
-  };
-
-  // ========================
   // ADD ELECTRICITY
   // ========================
   const addElectricity = async () => {
@@ -218,19 +196,12 @@ function Home({ user, signOut }: any) {
       let uploadedAt = null;
 
       // 🔥 Upload file if exists
-      if (electricityFile) {
-        const fileExt = electricityFile.name.split(".").pop();
-
-        const safeUser = userEmail.replace(/[^a-zA-Z0-9]/g, "_");
-
-        const timestamp = Date.now();
-        const isoDate = new Date().toISOString().split("T")[0];
-
-        const key = `evidence/${safeUser}/electricity/${year}/${month}/${isoDate}-${timestamp}.${fileExt}`;
+      if (receiptFile) {
+        const key = `receipts/${Date.now()}-${receiptFile.name}`;
 
         await uploadData({
           key,
-          data: electricityFile,
+          data: receiptFile,
         });
 
         fileKey = key;
@@ -249,7 +220,7 @@ function Home({ user, signOut }: any) {
 
       // Reset
       setKwh("");
-      setElectricityFile(null);
+      setReceiptFile(null);
 
       await loadData();
 
@@ -261,12 +232,6 @@ function Home({ user, signOut }: any) {
   // ========================
   // ADD WATER
   // ========================
-  console.log("WATER CLICK", {
-    waterUsage,
-    year,
-    month
-  });
-
   const addWater = async () => {
     if (!waterUsage || !year || !month) return;
 
@@ -275,19 +240,12 @@ function Home({ user, signOut }: any) {
       let uploadedAt = null;
 
       // 🔥 Upload file if exists
-      if (waterFile) {
-        const fileExt = waterFile.name.split(".").pop();
-
-        const safeUser = userEmail.replace(/[^a-zA-Z0-9]/g, "_");
-
-        const timestamp = Date.now();
-        const isoDate = new Date().toISOString().split("T")[0];
-
-        const key = `evidence/${safeUser}/water/${year}/${month}/${isoDate}-${timestamp}.${fileExt}`;
+      if (receiptFile) {
+        const key = `receipts/${Date.now()}-${receiptFile.name}`;
 
         await uploadData({
           key,
-          data: waterFile,
+          data: receiptFile,
         });
 
         fileKey = key;
@@ -305,7 +263,7 @@ function Home({ user, signOut }: any) {
 
       // Reset
       setWaterUsage("");
-      setWaterFile(null);
+      setReceiptFile(null);
 
       await loadData();
 
@@ -570,26 +528,12 @@ function Home({ user, signOut }: any) {
                       value={kwh} onChange={(e) => setKwh(e.target.value)} />
 
                     <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500">
-                      <label
-                        htmlFor="electricity-upload"
-                        className="cursor-pointer text-[#1f7a63] block w-full"
-                      >
-                        {electricityFile ? electricityFile.name : "Upload electricity bill (PDF or image)"}
-                      </label>
-
-                      <input
-                        id="electricity-upload"
-                        type="file"
-                        accept=".pdf,.jpg,.jpeg,.png"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            setElectricityFile(file);
-                            e.target.value = ""; // 🔥 reset input
-                          }
-                        }}
-                        className="hidden"
-                      />
+                    <input
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      onChange={handleFile}
+                      className="w-full p-3 border rounded-lg text-sm"
+                    />
                     </div>
 
                     <button onClick={addElectricity} className="w-full py-3 bg-[#1f7a63] text-white rounded-lg">
@@ -607,28 +551,14 @@ function Home({ user, signOut }: any) {
                     className="w-full p-3 border rounded-lg text-sm placeholder:text-gray-500"
                       value={waterUsage} onChange={(e) => setWaterUsage(e.target.value)} />
 
-                    <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500">
-                      <label
-                        htmlFor="water-upload"
-                        className="cursor-pointer text-[#1f7a63] block w-full"
-                      >
-                        {waterFile ? waterFile.name : "Upload water bill (PDF or image)"}
-                      </label>
-
+                      <div className="border border-dashed rounded-lg p-4 text-center text-sm text-gray-500">
                       <input
-                        id="water-upload"
                         type="file"
                         accept=".pdf,.jpg,.jpeg,.png"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            setWaterFile(file);
-                            e.target.value = ""; // 🔥 reset input
-                          }
-                        }}
-                        className="hidden"
+                        onChange={handleFile}
+                        className="w-full p-3 border rounded-lg text-sm"
                       />
-                    </div>
+                      </div>
 
                     <button onClick={addWater} className="w-full py-3 bg-[#1f7a63] text-white rounded-lg">
                       Add record
@@ -652,14 +582,6 @@ function Home({ user, signOut }: any) {
 
             <div className="bg-white rounded-xl border p-6">
 
-              <div className="mb-4 text-sm tracking-wide text-[#1f7a63] font-semibold uppercase">
-              {activeTab === "electricity"
-                ? "Electricity"
-                : activeTab === "water"
-                ? "Water"
-                : ""}
-              </div>
-
               {activeTab === "electricity" && (
                 <>
                   {electricityRecords.length === 0 ? (
@@ -674,7 +596,6 @@ function Home({ user, signOut }: any) {
                           <th>Month</th>
                           <th>Usage (kWh)</th>
                           <th>Emissions (tCO₂e)</th>
-                          <th>Evidence</th>
                           <th>Actions</th>
                         </tr>
                       </thead>
@@ -691,20 +612,6 @@ function Home({ user, signOut }: any) {
                             <td>{r.month}</td>
                             <td>{r.kwh}</td>
                             <td>{Number(r.emissionsT).toFixed(4)}</td>
-                            {/* Evidence-View */}
-                            <td>
-                              {r.receiptKey ? (
-                                <button
-                                  onClick={() => handleViewFile(r.receiptKey)}
-                                  className="text-[#1f7a63] hover:underline"
-                                >
-                                  View
-                                </button>
-                              ) : (
-                                "—"
-                              )}
-                            </td>
-                            {/* Actions-Delete */}
                             <td>
                               <button
                                 onClick={() => handleDelete(r.id)}
@@ -734,7 +641,6 @@ function Home({ user, signOut }: any) {
                           <th className="py-2">Year</th>
                           <th>Month</th>
                           <th>Water (m³)</th>
-                          <th>Evidence</th>
                           <th>Actions</th>
                         </tr>
                       </thead>
@@ -750,20 +656,6 @@ function Home({ user, signOut }: any) {
                             <td className="py-2">{r.year}</td>
                             <td>{r.month}</td>
                             <td>{r.volume}</td>
-                            {/* Evidence-View */}
-                            <td>
-                              {r.receiptKey ? (
-                                <button
-                                  onClick={() => handleViewFile(r.receiptKey)}
-                                  className="text-[#1f7a63] hover:underline"
-                                >
-                                  View
-                                </button>
-                              ) : (
-                                "—"
-                              )}
-                            </td>
-                            {/* Actions-Delete */}
                             <td>
                               <button
                                 onClick={() => handleDelete(r.id)}
