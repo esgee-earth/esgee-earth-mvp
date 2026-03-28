@@ -127,6 +127,9 @@ function Home({ user, signOut }: any) {
 
   const [showDropdown, setShowDropdown] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState(1); // PAGINATION STATE
+  const rowsPerPage = 10;
+
   const years = Array.from({ length: 16 }, (_, i) => 2015 + i);
 
   const userEmail =
@@ -152,6 +155,11 @@ function Home({ user, signOut }: any) {
   useEffect(() => {
     loadData();
   }, []);
+
+  // ✅ RESET PAGE WHEN SWITCH TAB
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
 
   // ========================
   // FILE
@@ -315,6 +323,33 @@ function Home({ user, signOut }: any) {
   };
 
   // ========================
+  // PAGINATION LOGIC
+  // ========================
+  const monthIndex = (m: string) =>
+    months.indexOf(m); // uses your existing months array
+
+  const sortedElectricity = [...electricityRecords].sort((a, b) => {
+    if (a.year !== b.year) return a.year - b.year;
+    return monthIndex(a.month) - monthIndex(b.month);
+  });
+
+  const paginatedElectricity = sortedElectricity.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  const sortedWater = [...waterRecords].sort((a, b) => {
+    if (a.year !== b.year) return a.year - b.year;
+    return monthIndex(a.month) - monthIndex(b.month);
+  });
+
+  const paginatedWater = sortedWater.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+
+  // ========================
   // EXPORT
   // ========================
   const generateFileId = () => {
@@ -329,7 +364,7 @@ function Home({ user, signOut }: any) {
         ? electricityRecords.length + 1
         : waterRecords.length + 1;
 
-    const prefix = activeTab === "electricity" ? "esgee-elec" : "esgee-water";
+    const prefix = activeTab === "electricity" ? "esgee-electricity" : "esgee-water";
 
     return `${prefix}-${datePart}-${String(count).padStart(5, "0")}`;
   };
@@ -654,9 +689,9 @@ function Home({ user, signOut }: any) {
 
               <div className="mb-4 text-sm tracking-wide text-[#1f7a63] font-semibold uppercase">
               {activeTab === "electricity"
-                ? "Electricity"
+                ? `Electricity · Total records: ${electricityRecords.length}`
                 : activeTab === "water"
-                ? "Water"
+                ? `Water · Total records: ${waterRecords.length}`
                 : ""}
               </div>
 
@@ -667,56 +702,77 @@ function Home({ user, signOut }: any) {
                       No electricity records yet
                     </div>
                   ) : (
-                    <table className="w-full text-sm text-center">
-                      <thead className="text-gray-400 border-b">
-                        <tr>
-                          <th className="py-2">Year</th>
-                          <th>Month</th>
-                          <th>Usage (kWh)</th>
-                          <th>Emissions (tCO₂e)</th>
-                          <th>Evidence</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                      {[...electricityRecords]
-                        .sort((a, b) => {
-                          const dateA = new Date(`${a.month} 1, ${a.year}`);
-                          const dateB = new Date(`${b.month} 1, ${b.year}`);
-                          return dateA.getTime() - dateB.getTime();
-                        })
-                        .map((r) => (
-                          <tr key={r.id} className="border-b hover:bg-gray-50">
-                            <td className="py-2">{r.year}</td>
-                            <td>{r.month}</td>
-                            <td>{r.kwh}</td>
-                            <td>{Number(r.emissionsT).toFixed(4)}</td>
-                            {/* Evidence-View */}
-                            <td>
-                              {r.receiptKey ? (
-                                <button
-                                  onClick={() => handleViewFile(r.receiptKey)}
-                                  className="text-[#1f7a63] hover:underline"
-                                >
-                                  View
-                                </button>
-                              ) : (
-                                "—"
-                              )}
-                            </td>
-                            {/* Actions-Delete */}
-                            <td>
-                              <button
-                                onClick={() => handleDelete(r.id)}
-                                className="text-red-500"
-                              >
-                                Delete
-                              </button>
-                            </td>
+                    <>
+                      <table className="w-full text-sm text-center">
+                        <thead className="text-gray-400 border-b">
+                          <tr>
+                            <th className="py-2">Year</th>
+                            <th>Month</th>
+                            <th>Usage (kWh)</th>
+                            <th>Emissions (tCO₂e)</th>
+                            <th>Evidence</th>
+                            <th>Actions</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                        {paginatedElectricity.map((r) => (
+                            <tr key={r.id} className="border-b hover:bg-gray-50">
+                              <td className="py-2">{r.year}</td>
+                              <td>{r.month}</td>
+                              <td>{r.kwh}</td>
+                              <td>{Number(r.emissionsT).toFixed(4)}</td>
+                              {/* Evidence-View */}
+                              <td>
+                                {r.receiptKey ? (
+                                  <button
+                                    onClick={() => handleViewFile(r.receiptKey)}
+                                    className="text-[#1f7a63] hover:underline"
+                                  >
+                                    View
+                                  </button>
+                                ) : (
+                                  "—"
+                                )}
+                              </td>
+                              {/* Actions-Delete */}
+                              <td>
+                                <button
+                                  onClick={() => handleDelete(r.id)}
+                                  className="text-red-500"
+                                >
+                                  Delete
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      <div className="flex justify-between items-center mt-4 text-sm">
+                        <button
+                          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                          disabled={currentPage === 1}
+                          className="px-3 py-1 border rounded disabled:opacity-40"
+                        >
+                          Previous
+                        </button>
+
+                        <span className="text-gray-500">
+                          Page {currentPage} of {Math.ceil(electricityRecords.length / rowsPerPage)} (10 per page)
+                        </span>
+
+                        <button
+                          onClick={() =>
+                            setCurrentPage((p) =>
+                              p * rowsPerPage < electricityRecords.length ? p + 1 : p
+                            )
+                          }
+                          disabled={currentPage * rowsPerPage >= electricityRecords.length}
+                          className="px-3 py-1 border rounded disabled:opacity-40"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </>
                   )}
                 </>
               )}
@@ -728,54 +784,75 @@ function Home({ user, signOut }: any) {
                       No water records yet
                     </div>
                   ) : (
-                    <table className="w-full text-sm text-center">
-                      <thead className="text-gray-400 border-b">
-                        <tr>
-                          <th className="py-2">Year</th>
-                          <th>Month</th>
-                          <th>Water (m³)</th>
-                          <th>Evidence</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                      {[...waterRecords]
-                        .sort((a, b) => {
-                          const dateA = new Date(`${a.month} 1, ${a.year}`);
-                          const dateB = new Date(`${b.month} 1, ${b.year}`);
-                          return dateA.getTime() - dateB.getTime();
-                        })
-                        .map((r) => (
-                          <tr key={r.id} className="border-b hover:bg-gray-50">
-                            <td className="py-2">{r.year}</td>
-                            <td>{r.month}</td>
-                            <td>{r.volume}</td>
-                            {/* Evidence-View */}
-                            <td>
-                              {r.receiptKey ? (
-                                <button
-                                  onClick={() => handleViewFile(r.receiptKey)}
-                                  className="text-[#1f7a63] hover:underline"
-                                >
-                                  View
-                                </button>
-                              ) : (
-                                "—"
-                              )}
-                            </td>
-                            {/* Actions-Delete */}
-                            <td>
-                              <button
-                                onClick={() => handleDelete(r.id)}
-                                className="text-red-500"
-                              >
-                                Delete
-                              </button>
-                            </td>
+                    <>
+                      <table className="w-full text-sm text-center">
+                        <thead className="text-gray-400 border-b">
+                          <tr>
+                            <th className="py-2">Year</th>
+                            <th>Month</th>
+                            <th>Water (m³)</th>
+                            <th>Evidence</th>
+                            <th>Actions</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                        {paginatedWater.map((r) => (
+                            <tr key={r.id} className="border-b hover:bg-gray-50">
+                              <td className="py-2">{r.year}</td>
+                              <td>{r.month}</td>
+                              <td>{r.volume}</td>
+                              {/* Evidence-View */}
+                              <td>
+                                {r.receiptKey ? (
+                                  <button
+                                    onClick={() => handleViewFile(r.receiptKey)}
+                                    className="text-[#1f7a63] hover:underline"
+                                  >
+                                    View
+                                  </button>
+                                ) : (
+                                  "—"
+                                )}
+                              </td>
+                              {/* Actions-Delete */}
+                              <td>
+                                <button
+                                  onClick={() => handleDelete(r.id)}
+                                  className="text-red-500"
+                                >
+                                  Delete
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      <div className="flex justify-between items-center mt-4 text-sm">
+                        <button
+                          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                          disabled={currentPage === 1}
+                          className="px-3 py-1 border rounded disabled:opacity-40"
+                        >
+                          Previous
+                        </button>
+
+                        <span className="text-gray-500">
+                          Page {currentPage} of {Math.ceil(waterRecords.length / rowsPerPage)} (10 per page)
+                        </span>
+
+                        <button
+                          onClick={() =>
+                            setCurrentPage((p) =>
+                              p * rowsPerPage < waterRecords.length ? p + 1 : p
+                            )
+                          }
+                          disabled={currentPage * rowsPerPage >= waterRecords.length}
+                          className="px-3 py-1 border rounded disabled:opacity-40"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </>
                   )}
                 </>
               )}
